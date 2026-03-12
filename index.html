@@ -2,16 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Preface HR Assistant</title>
     <!-- n8n Chat CSS -->
     <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
     <style>
         :root {
-            /* n8n Chat Customization via CSS Variables 
-               Adjust these to match Preface's brand guidelines
-            */
-            --n8n-chat-primary-color: #ff3b30; /* Example Preface Red */
+            /* n8n Chat Customization via CSS Variables */
+            --n8n-chat-primary-color: #ff3b30;
             --n8n-chat-background-color: #ffffff;
             --n8n-chat-font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
@@ -20,15 +18,30 @@
             margin: 0;
             padding: 0;
             width: 100%;
-            height: 100%;
+            /* Fix for Safari Mobile: 100dvh accounts for dynamic UI elements */
+            height: 100dvh;
             overflow: hidden;
-            background-color: #f4f7f9;
+            background-color: #ffffff;
+            /* Prevents rubber-banding/bouncing on iOS */
+            position: fixed;
         }
 
         /* Container for the fullscreen chat */
         #n8n-chat-container {
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Specific fix for the n8n-chat input area on mobile.
+           We add a small padding at the bottom to ensure the input 
+           isn't clipped by the Safari home indicator or address bar.
+        */
+        @media (max-width: 768px) {
+            .n8n-chat-input-area {
+                padding-bottom: env(safe-area-inset-bottom, 20px) !important;
+            }
         }
     </style>
 </head>
@@ -40,28 +53,19 @@
         import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
 
         createChat({
-            // Target the container defined above
             target: '#n8n-chat-container',
-            
-            // Webhook Configuration (Insert your n8n Production Webhook URL here)
             webhookUrl: 'https://martinchan26.app.n8n.cloud/webhook/e85239d9-2cf6-4fc1-bb28-5f0ad320aff7/chat',
-            
-            // Mode: 'fullscreen' occupies the whole container, 'window' creates a bubble
             mode: 'fullscreen',
-            
-            // Chat logic settings
             chatInputKey: 'chatInput',
             chatSessionKey: 'sessionId',
             loadPreviousSession: true,
-            enableStreaming: true, // Recommended for better AI UX (requires streaming enabled in n8n)
+            enableStreaming: true,
 
-            // Metadata for identifying the context in n8n
             metadata: {
                 department: 'HR',
                 platform: 'Preface Employee Portal'
             },
 
-            // Visual and Copy Customization
             showWelcomeScreen: true,
             defaultLanguage: 'en',
             
@@ -77,15 +81,10 @@
                     footer: 'Powered by Preface AI',
                     getStarted: 'Start Inquiring',
                     inputPlaceholder: 'Type your question here...',
-                },
-                // You can add more languages here (e.g., 'zh-HK') if your n8n workflow handles them
+                }
             },
 
-            // File Upload settings (if enabled in your n8n Chat Trigger)
             allowFileUploads: false, 
-            // allowedFilesMimeTypes: 'image/*,application/pdf',
-
-            // Optional: Webhook request configuration
             webhookConfig: {
                 method: 'POST',
                 headers: {}
